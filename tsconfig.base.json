@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@client/ui": ["client/packages/ui/src"],
+      "@client/types": ["client/packages/types/src"],
+      "@server/types": ["server/packages/types/src"],
+      "@server/utils": ["server/packages/utils/src"]
+    }
+  }
+}
