@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAllProducts, getProductById } from "../services/product.service";
+import { getAllProducts, getProductById } from "../services/product.service.js";
 
 export const getProductsController = async (req: Request, res: Response) => {
   const data = await getAllProducts();

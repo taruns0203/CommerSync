@@ -1,4 +1,4 @@
-import { authCollection, Auth } from "../models/auth.model";
+import { authCollection, Auth } from "../models/auth.model.js";
 
 export const getAllAuth = async (): Promise<Auth[]> => {
   // DB call in real life

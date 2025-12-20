@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAllAuth, getAuthId } from "../services/auth.service";
+import { getAllAuth, getAuthId } from "../services/auth.service.js";
 
 export const getAuthController = async (req: Request, res: Response) => {
   const data = await getAllAuth();
