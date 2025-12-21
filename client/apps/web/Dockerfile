@@ -17,7 +17,7 @@ COPY client/ ./client/
 RUN pnpm install --frozen-lockfile
 
 # Build the web app and its dependencies
-RUN pnpm --filter @client/web build
+RUN pnpm --filter web build
 
 # Stage 2: Runtime for Next.js
 FROM node:20-alpine AS runner

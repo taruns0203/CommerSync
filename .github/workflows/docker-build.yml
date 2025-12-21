@@ -138,8 +138,8 @@ jobs:
             --build-arg BUILD_DATE="${BUILD_DATE}" \
             --build-arg VCS_REF="${SHORT_SHA}" \
             --build-arg VERSION="${SHORT_SHA}" \
-            -t ${IMAGE_SHA} \
-            ${{ matrix.service.path }}
+            -f ${{ matrix.service.path }}/Dockerfile \
+          -t ${IMAGE_SHA} \
 
           BUILD_EXIT_CODE=$?
           if [ $BUILD_EXIT_CODE -eq 0 ]; then
