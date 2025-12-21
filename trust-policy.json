@@ -12,7 +12,10 @@
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
         },
         "StringLike": {
-          "token.actions.githubusercontent.com:sub": "repo:taruns0203/CommerSync:*"
+          "token.actions.githubusercontent.com:sub": [
+            "repo:taruns0203/CommerSync:ref:refs/heads/main",
+            "repo:taruns0203/CommerSync:ref:refs/heads/dev"
+          ]
         }
       }
     }
