@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <main>
       <h1>{p.title}</h1>
-      <Button variant="contained">Buy Now</Button>
+      <Button variant="contained">Buy Now Here</Button>
     </main>
   );
 }
