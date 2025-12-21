@@ -1,0 +1,5 @@
+
+
+> @server/product-service@ build /Users/Projects/CommerSync/server/services/product-service
+> tsc -p tsconfig.json
+
