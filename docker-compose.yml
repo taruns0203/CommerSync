@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: client/apps/web/Dockerfile
+    container_name: commersync-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_AUTH_URL=http://localhost:4001
+      - NEXT_PUBLIC_PRODUCT_URL=http://localhost:4002
+    networks:
+      - commersync-network
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: server/services/auth-service/Dockerfile
+    container_name: commersync-auth
+    ports:
+      - "4001:4001"
+    environment:
+      - NODE_ENV=production
+      - PORT=4001
+    networks:
+      - commersync-network
+
+  product-service:
+    build:
+      context: .
+      dockerfile: server/services/product-service/Dockerfile
+    container_name: commersync-product
+    ports:
+      - "4002:4002"
+    environment:
+      - NODE_ENV=production
+      - PORT=4002
+    networks:
+      - commersync-network
+
+networks:
+  commersync-network:
+    driver: bridge

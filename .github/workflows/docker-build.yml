@@ -1,0 +1,73 @@
+name: Build & Push Docker Images
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - "server/**"
+      - "client/**"
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: 571600830802
+  AWS_ECR_REPOSITORY: commer-sync-dev
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service:
+          - name: client
+            path: client/apps/web
+            ecr: client-web
+          - name: auth-service
+            path: server/services/auth-service
+            ecr: auth-service
+          - name: product-service
+            path: server/services/product-service
+            ecr: product-service
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID}}:role/GithubActionsECRRole
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login To ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & Push Docker Image with Multiple Tags
+        run: |
+          # Define base image URL
+          ECR_REGISTRY=${{ env.AWS_ACCOUNT_ID}}.dkr.ecr.${{ env.AWS_REGION}}.amazonaws.com
+          IMAGE_NAME=${{matrix.service.ecr}}
+
+          # Get short SHA (First 7 characters)
+          SHORT_SHA = $(git rev-parse --short HEAD)
+
+          #Define image tags
+          IMAGE_SHA="${ECR_REGISTRY}/${IMAGE_NAME}:${SHORT_SHA}"
+          IMAGE_LATEST="${ECR_REGISTRY}/${IMAGE_NAME}:latest"
+
+          # Build image with SHA tags
+          docker build -t $IMAGE_SHA ${{ matrix.service.path }}
+
+          # Tag with 'latest'
+          docker tag $IMAGE_SHA $IMAGE_LATEST
+
+          #Push both tags
+          docker push $IMAGE_SHA
+          docker push $IMAGE_LATEST
+
+          #Output for reference
+          echo "Pushed image: $IMAGE_SHA"
+          echo "Pushed image: $IMAGE_LATEST"

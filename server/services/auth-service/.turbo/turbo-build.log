@@ -1,0 +1,5 @@
+
+
+> @server/auth-service@ build /Users/Projects/CommerSync/server/services/auth-service
+> tsc -p tsconfig.json
+
