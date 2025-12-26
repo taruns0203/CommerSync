@@ -14,4 +14,12 @@ app.use(errorHandler);
 
 app.get("/", (_, res) => res.send("Auth Service Running"));
 
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "healthy",
+    service: "auth-service",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 export default app;
