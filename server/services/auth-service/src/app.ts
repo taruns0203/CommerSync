@@ -5,6 +5,8 @@ import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
 
+console.log("Deployment test");
+
 app.use(cors());
 app.use(express.json());
 
