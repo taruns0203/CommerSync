@@ -94,6 +94,7 @@ jobs:
           echo "| 📁 Build Path | \`client\` |" >> $GITHUB_STEP_SUMMARY
           echo "| 📦 ECR Repository | \`${{ env.ECR_REPOSITORY }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| 🔗 Commit SHA | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔗 Short SHA | \`${GITHUB_SHA::7}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| 🌿 Branch | \`${GITHUB_REF#refs/heads/}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| 👤 Triggered By | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -108,4 +109,21 @@ jobs:
           echo "#### 🎯 Deployment Information" >> $GITHUB_STEP_SUMMARY
           echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| 🎮 ECS Cluster | \`${{ env.ECS_CLUSTER }}\` |" >> $GITHUB_STEP
+          echo "| 🎮 ECS Cluster | \`${{ env.ECS_CLUSTER }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔧 ECS Service | \`${{ env.ECS_SERVICE }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📋 Container Name | \`${{ env.CONTAINER_NAME }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌍 AWS Region | \`${{ env.AWS_REGION }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🖼️ Deployed Image | \`${{ steps.build-image.outputs.image }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ **Build and deployment completed successfully!**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Build or deployment failed. Check logs above.**" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "#### 🔗 Quick Links" >> $GITHUB_STEP_SUMMARY
+          echo "- [View Service in ECS](https://console.aws.amazon.com/ecs/v2/clusters/${{ env.ECS_CLUSTER }}/services/${{ env.ECS_SERVICE }})" >> $GITHUB_STEP_SUMMARY
+          echo "- [View ECR Repository](https://console.aws.amazon.com/ecr/repositories/private/${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }})" >> $GITHUB_STEP_SUMMARY
+          echo "- [View CloudWatch Logs](https://console.aws.amazon.com/cloudwatch/home?region=${{ env.AWS_REGION }}#logsV2:log-groups/log-group//ecs/commersync/client-web)" >> $GITHUB_STEP_SUMMARY
