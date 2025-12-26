@@ -24,6 +24,9 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
+# Install wget for Healthcheck
+RUN apk add --no-cache wget
+
 # Create node user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
@@ -51,5 +54,8 @@ EXPOSE 3000
 # Switch to non-root user
 USER nextjs
 
+# Add Health Check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 # Start Next.js
 CMD ["pnpm", "start"]
