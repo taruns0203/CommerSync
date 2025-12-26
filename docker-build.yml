@@ -1,0 +1,220 @@
+name: Build & Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - "server/**"
+      - "client/**"
+
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: 571600830802
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service:
+          - name: client
+            path: client/apps/web
+            ecr: client-web
+          - name: auth-service
+            path: server/services/auth-service
+            ecr: auth-service
+          - name: product-service
+            path: server/services/product-service
+            ecr: product-service
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Debug Info
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "SHA: ${{ github.sha }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Event: ${{ github.event_name }}"
+
+      - name: 🔍 Display Build Context
+        run: |
+          echo "::group::Build Information"
+          echo "🏷️  Service: ${{ matrix.service.name }}"
+          echo "📁 Build Path: ${{ matrix.service.path }}"
+          echo "📦 ECR Repository: ${{ matrix.service.ecr }}"
+          echo "🌿 Branch: ${GITHUB_REF#refs/heads/}"
+          echo "👤 Triggered by: ${{ github.actor }}"
+          echo "💬 Commit Message: ${{ github.event.head_commit.message }}"
+          echo "🔗 Commit SHA: ${{ github.sha }}"
+          echo "::endgroup::"
+
+      - name: 🔐 Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::571600830802:role/GitHubActionsECRRole
+          aws-region: us-east-1
+
+      - name: ✅ Verify AWS Identity
+        run: |
+          echo "::group::AWS Identity"
+          aws sts get-caller-identity
+          echo "::endgroup::"
+
+      - name: 🔑 Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: 🏗️  Create ECR Repository if Not Exists
+        continue-on-error: true
+        run: |
+          echo "::group::ECR Repository Check"
+          echo "Checking if repository '${{ matrix.service.ecr }}' exists..."
+
+          if aws ecr describe-repositories \
+            --repository-names ${{ matrix.service.ecr }} \
+            --region ${{ env.AWS_REGION }} 2>/dev/null; then
+            echo "✅ Repository already exists"
+          else
+            echo "📦 Creating repository '${{ matrix.service.ecr }}'..."
+            aws ecr create-repository \
+              --repository-name ${{ matrix.service.ecr }} \
+              --region ${{ env.AWS_REGION }} \
+              --image-scanning-configuration scanOnPush=true \
+              --encryption-configuration encryptionType=AES256
+            echo "✅ Repository created successfully"
+          fi
+          echo "::endgroup::"
+
+      - name: 🐳 Build & Push Docker Images
+        id: docker_build
+        run: |
+          echo "::group::Docker Build Configuration"
+
+          # Define variables
+          ECR_REGISTRY=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+          IMAGE_NAME=${{ matrix.service.ecr }}
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+
+          # Define image tags
+          IMAGE_SHA="${ECR_REGISTRY}/${IMAGE_NAME}:${SHORT_SHA}"
+          IMAGE_LATEST="${ECR_REGISTRY}/${IMAGE_NAME}:latest"
+          IMAGE_DEV="${ECR_REGISTRY}/${IMAGE_NAME}:dev"
+
+          echo "📋 Build Variables:"
+          echo "  Registry: ${ECR_REGISTRY}"
+          echo "  Image Name: ${IMAGE_NAME}"
+          echo "  Short SHA: ${SHORT_SHA}"
+          echo "  Build Date: ${BUILD_DATE}"
+          echo ""
+          echo "🏷️  Image Tags:"
+          echo "  SHA Tag: ${IMAGE_SHA}"
+          echo "  Latest Tag: ${IMAGE_LATEST}"
+          echo "  Dev Tag: ${IMAGE_DEV}"
+          echo "::endgroup::"
+
+          # Check if Dockerfile exists
+          echo "::group::Pre-build Checks"
+          if [ ! -f "${{ matrix.service.path }}/Dockerfile" ]; then
+            echo "❌ ERROR: Dockerfile not found at ${{ matrix.service.path }}/Dockerfile"
+            exit 1
+          fi
+          echo "✅ Dockerfile found"
+          echo "::endgroup::"
+
+          # Build Docker image
+          echo "::group::Building Docker Image"
+          echo "🔨 Building image: ${IMAGE_SHA}"
+          docker build \
+            --build-arg BUILD_DATE="${BUILD_DATE}" \
+            --build-arg VCS_REF="${SHORT_SHA}" \
+            --build-arg VERSION="${SHORT_SHA}" \
+            -f ${{ matrix.service.path }}/Dockerfile \
+            -t ${IMAGE_SHA} \
+            .
+
+          BUILD_EXIT_CODE=$?
+          if [ $BUILD_EXIT_CODE -eq 0 ]; then
+            echo "✅ Build successful"
+          else
+            echo "❌ Build failed with exit code: $BUILD_EXIT_CODE"
+            exit $BUILD_EXIT_CODE
+          fi
+          echo "::endgroup::"
+
+          # Tag images
+          echo "::group::Tagging Images"
+          echo "🏷️  Tagging image with 'latest' tag..."
+          docker tag ${IMAGE_SHA} ${IMAGE_LATEST}
+          echo "🏷️  Tagging image with 'dev' tag..."
+          docker tag ${IMAGE_SHA} ${IMAGE_DEV}
+          echo "✅ Tagging complete"
+          echo "::endgroup::"
+
+          # Display image info
+          echo "::group::Image Information"
+          docker images | grep ${IMAGE_NAME} || true
+          echo "::endgroup::"
+
+          # Push images
+          echo "::group::Pushing Images to ECR"
+          echo "⬆️  Pushing SHA tag: ${IMAGE_SHA}"
+          docker push ${IMAGE_SHA}
+          echo "✅ SHA tag pushed"
+
+          echo "⬆️  Pushing latest tag: ${IMAGE_LATEST}"
+          docker push ${IMAGE_LATEST}
+          echo "✅ Latest tag pushed"
+
+          echo "⬆️  Pushing dev tag: ${IMAGE_DEV}"
+          docker push ${IMAGE_DEV}
+          echo "✅ Dev tag pushed"
+          echo "::endgroup::"
+
+          # Set outputs for summary
+          echo "image_sha=${IMAGE_SHA}" >> $GITHUB_OUTPUT
+          echo "image_latest=${IMAGE_LATEST}" >> $GITHUB_OUTPUT
+          echo "image_dev=${IMAGE_DEV}" >> $GITHUB_OUTPUT
+          echo "short_sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: 📊 Build Summary
+        if: always()
+        run: |
+          echo "### 🐳 Docker Build Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🏷️ Service | \`${{ matrix.service.name }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📁 Build Path | \`${{ matrix.service.path }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📦 ECR Repo | \`${{ matrix.service.ecr }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔗 Commit SHA | \`${{ steps.docker_build.outputs.short_sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌿 Branch | \`${GITHUB_REF#refs/heads/}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### 🏷️ Pushed Images:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.docker_build.outputs.image_sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.docker_build.outputs.image_latest }}" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.docker_build.outputs.image_dev }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Build completed successfully!**" >> $GITHUB_STEP_SUMMARY
+
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          echo "::group::Cleanup"
+          echo "🧹 Removing local Docker images to free up space..."
+          docker rmi ${{ steps.docker_build.outputs.image_sha }} || true
+          docker rmi ${{ steps.docker_build.outputs.image_latest }} || true
+          docker rmi ${{ steps.docker_build.outputs.image_dev }} || true
+          echo "✅ Cleanup complete"
+          echo "::endgroup::"
