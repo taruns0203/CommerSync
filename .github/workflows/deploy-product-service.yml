@@ -15,7 +15,7 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: product-service
-  ECS_SERVICE: commersync-product-service
+  ECS_SERVICE: commersync-product-service-dev
   ECS_CLUSTER: commersync-dev-cluster
   CONTAINER_NAME: product-service
 
