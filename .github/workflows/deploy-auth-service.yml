@@ -1,0 +1,166 @@
+name: Deploy Auth Service
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - "server/services/auth-service/**"
+      - "pnpm-lock.yaml"
+      - "package.json"
+      - ".github/workflows/deploy-auth-service.yml"
+      - "turbo.json"
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: auth-service
+  ECS_SERVICE: commersync-auth-service
+  ECS_CLUSTER: commersync-dev-cluster
+  CONTAINER_NAME: auth-service
+
+jobs:
+  deploy:
+    name: Build and Deploy Auth Service
+    runs-on: ubuntu-latest
+
+    steps:
+      # ==========================================
+      # STEP 1: Checkout Repository
+      # ==========================================
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # ==========================================
+      # STEP 3: Login to Amazon ECR
+      # ==========================================
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ==========================================
+      # STEP 4: Build, Tag, and Push Docker Image
+      # ==========================================
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          echo "Building Docker image for auth-service..."
+
+          # Build Docker image with two tags: commit SHA and 'latest'
+          docker build \
+          -f server/services/auth-service/Dockerfile \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+          .
+
+          echo "Pushing images to ECR..."
+
+          # Push both tags to ECR
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+          # Output the image URI for next steps
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+          echo "✅ Successfully built and pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      # ==========================================
+      # STEP 5: Download Current Task Definition
+      # ==========================================
+      - name: Download current task definition from ECS
+        run: |
+          echo "Downloading current task definition..."
+
+          aws ecs describe-task-definition \
+          --task-definition ${{ env.ECS_SERVICE }}-task \
+          --query taskDefinition > task-definition.json
+
+          echo "✅ Task definition downloaded"
+
+          # Show current image (for debugging)
+          echo "Current image in task definition:"
+          cat task-definition.json | jq -r '.containerDefinitions[0].image'
+
+      # ==========================================
+      # STEP 6: Update Task Definition with New Image
+      # ==========================================
+      - name: Fill in new image ID in task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      # ==========================================
+      # STEP 7: Deploy Updated Task Definition to ECS
+      # ==========================================
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      # ==========================================
+      # STEP 8: Verify Deployment
+      # ==========================================
+      - name: Verify deployment
+        run: |
+          echo "Checking deployment status..."
+
+          # Get current task definition being used
+          CURRENT_TASK_DEF=$(aws ecs describe-services \
+          --cluster ${{ env.ECS_CLUSTER }} \
+          --services ${{ env.ECS_SERVICE }} \
+          --query 'services[0].taskDefinition' \
+          --output text)
+
+          echo "Current task definition: $CURRENT_TASK_DEF"
+
+          # Get image being used
+          CURRENT_IMAGE=$(aws ecs describe-task-definition \
+          --task-definition $CURRENT_TASK_DEF \
+          --query 'taskDefinition.containerDefinitions[0].image' \
+          --output text)
+
+          echo "Current image: $CURRENT_IMAGE"
+          echo "Expected image: ${{ steps.build-image.outputs.image }}"
+
+          # Verify it's the image we just deployed
+          if [[ "$CURRENT_IMAGE" == "${{ steps.build-image.outputs.image }}" ]]; then
+          echo "✅ Deployment verified successfully!"
+          else
+          echo "❌ Image mismatch! Deployment may have failed."
+          exit 1
+          fi
+
+      # ==========================================
+      # STEP 9: Deployment Summary
+      # ==========================================
+      - name: Deployment summary
+        run: |
+          echo "### 🚀 Auth Service Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Service:** ${{ env.ECS_SERVICE }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Cluster:** ${{ env.ECS_CLUSTER }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ steps.build-image.outputs.image }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Region:** ${{ env.AWS_REGION }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Zero-downtime deployment completed successfully!" >> $GITHUB_STEP_SUMMARY
