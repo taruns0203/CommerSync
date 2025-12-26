@@ -3,7 +3,9 @@ import { getAllProducts, getProductById } from "../services/product.service.js";
 
 export const getProductsController = async (req: Request, res: Response) => {
   const data = await getAllProducts();
-  res.status(200).json({ success: true, data });
+  res
+    .status(200)
+    .json({ success: true, message: "New Product deployment", data });
 };
 
 export const getProductByIdController = async (req: Request, res: Response) => {
