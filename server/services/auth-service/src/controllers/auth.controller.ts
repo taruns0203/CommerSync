@@ -3,7 +3,7 @@ import { getAllAuth, getAuthId } from "../services/auth.service.js";
 
 export const getAuthController = async (req: Request, res: Response) => {
   const data = await getAllAuth();
-  res.status(200).json({ success: true, data });
+  res.status(200).json({ success: true, message: "New Deployment", data });
 };
 
 export const getAuthByIdController = async (req: Request, res: Response) => {
