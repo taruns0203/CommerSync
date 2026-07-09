@@ -182,3 +182,6 @@ vite.config.ts.timestamp-_
 /policyData
 /awsData
 /.turbo
+
+.DS_Store
+docs
