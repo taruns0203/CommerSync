@@ -1,11 +1,10 @@
-import express from "express";
 import cors from "cors";
-import authRoutes from "./routes/auth.routes.js";
+import express from "express";
+
 import { errorHandler } from "./middlewares/errorHandler.js";
+import authRoutes from "./routes/auth.routes.js";
 
 const app = express();
-
-console.log("Deployment test");
 
 app.use(cors());
 app.use(express.json());

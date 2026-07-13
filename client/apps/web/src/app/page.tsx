@@ -1,4 +1,4 @@
-import { Product } from "@commersync/types";
+import type { Product } from "@commersync/types";
 
 import { Button } from "@client/ui";
 

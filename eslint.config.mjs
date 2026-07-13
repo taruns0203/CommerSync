@@ -1,7 +1,12 @@
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import importPlugin from "eslint-plugin-import";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default [
   // Ignore patterns must be in their own config block
@@ -42,7 +47,7 @@ export default [
       sourceType: "module",
       parserOptions: {
         project: ["./tsconfig.base.json", "**/tsconfig.json"],
-        tsconfigRootDir: "."
+        tsconfigRootDir: __dirname
       }
     },
     plugins: {
@@ -95,7 +100,8 @@ export default [
       "simple-import-sort/exports": "error",
       "import/first": "error",
       "import/newline-after-import": "error",
-      "import/no-duplicates": "error"
+      "import/no-duplicates": "error",
+      "import/no-unresolved": "off"
     }
   }
 ];
