@@ -3,7 +3,6 @@ import express from "express";
 
 import { errorHandler } from "./middlewares/errorHandler.js";
 import productRoutes from "./routes/product.routes.js";
-import { log } from "./utils/logger.js";
 
 const app = express();
 

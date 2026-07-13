@@ -1,5 +1,4 @@
 
-
 > @client/ui@0.0.0 typecheck /Users/Projects/CommerSync/client/packages/ui
 > tsc --noEmit
 

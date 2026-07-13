@@ -1,0 +1,13 @@
+{
+  "name": "@commersync/config-testing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./vitest": "./vitest.base.ts",
+    "./setup": "./setup.ts"
+  },
+  "peerDependencies": {
+    "vitest": "^3.2.4"
+  }
+}

@@ -1,10 +1,15 @@
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import importPlugin from "eslint-plugin-import";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export default [
+  // Ignore patterns must be in their own config block
   {
     ignores: [
       "**/node_modules/**",
@@ -12,24 +17,28 @@ export default [
       "**/build/**",
       "**/.next/**",
       "**/out/**",
+      "**/coverage/**",
+      "**/.turbo/**",
       "**/*.config.js",
       "**/*.config.mjs",
       "**/pnpm-lock.yaml",
-    ],
+      "**/prisma/generated/**"
+    ]
   },
-  // JavaScript files
+  // JavaScript files configurations
   {
-    files: ["**/*.{js,jsx}"],
+    files: ["**/*.{js,jsx,mjs,cjs}"],
     languageOptions: {
       ecmaVersion: "latest",
-      sourceType: "module",
+      sourceType: "module"
     },
     rules: {
       "no-unused-vars": "warn",
-      "no-console": "off",
-    },
+      "no-console": process.env.NODE_ENV === "production" ? "error" : "warn",
+      "no-debugger": "error"
+    }
   },
-  // TypeScript files
+  // TypeScript configuration block
   {
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
@@ -37,38 +46,53 @@ export default [
       ecmaVersion: "latest",
       sourceType: "module",
       parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-      },
+        project: ["./tsconfig.base.json", "**/tsconfig.json"],
+        tsconfigRootDir: __dirname
+      }
     },
     plugins: {
       "@typescript-eslint": tseslint,
-      import: importPlugin,
-      "simple-import-sort": simpleImportSort,
+      "import": importPlugin,
+      "simple-import-sort": simpleImportSort
     },
     rules: {
-      "@typescript-eslint/no-unused-vars": "warn",
-      "no-console": "off",
+      // TypeScript rules
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-misused-promises": "error",
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { "prefer": "type-imports", "fixStyle": "separate-type-imports" }
+      ],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+      ],
+      "@typescript-eslint/no-unnecessary-condition": "error",
+      "@typescript-eslint/switch-exhaustiveness-check": "error",
+
+      // Code quality rules
+      "no-console": process.env.NODE_ENV === "production" ? "error" : "warn",
+      "no-debugger": "error",
+      "max-depth": ["error", 4],
+      "max-lines-per-function": ["warn", { "max": 60, "skipBlankLines": true, "skipComments": true }],
+
+      // Import sorting configurations
       "simple-import-sort/imports": [
         "error",
         {
-          groups: [
-            // React & Next
+          "groups": [
+            // 1. React, Next.js, and core frameworks
             ["^react$", "^next"],
-
-            // External packages
+            // 2. Third-party packages from npm
             ["^@?\\w"],
-
-            // Monorepo packages
+            // 3. Monorepo workspace internal packages
             ["^@client", "^@server"],
-
-            // Internal aliases
+            // 4. Project level aliases
             ["^@/"],
-
-            // Relative imports
+            // 5. Relative file path imports
             ["^\\."],
-
-            // Styles
+            // 6. Global CSS imports
             ["\\.css$"]
           ]
         }
@@ -77,7 +101,7 @@ export default [
       "import/first": "error",
       "import/newline-after-import": "error",
       "import/no-duplicates": "error",
-    },
-  },
+      "import/no-unresolved": "off"
+    }
+  }
 ];
-

@@ -1,4 +1,5 @@
-import { products, Product } from "../models/product.model.js";
+import type { Product } from "../models/product.model.js";
+import { products } from "../models/product.model.js";
 
 export const getAllProducts = async (): Promise<Product[]> => {
   // DB call in real life

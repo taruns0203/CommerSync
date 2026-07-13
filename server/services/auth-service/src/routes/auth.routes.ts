@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import {
   getAuthByIdController,
   getAuthController,
@@ -6,7 +7,11 @@ import {
 
 const router = Router();
 
-router.get("/", getAuthController);
-router.get("/:id", getAuthByIdController);
+router.get("/", (req, res, next) => {
+  getAuthController(req, res).catch(next);
+});
+router.get("/:id", (req, res, next) => {
+  getAuthByIdController(req, res).catch(next);
+});
 
 export default router;
