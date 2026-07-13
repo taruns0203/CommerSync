@@ -1,5 +1,4 @@
-import { Lato, Space_Grotesk } from "next/font/google";
-
+import { Space_Grotesk, Lato } from "next/font/google";
 import { Providers } from "./providers";
 
 const spaceGrotest = Space_Grotesk({

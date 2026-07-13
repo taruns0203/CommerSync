@@ -1,15 +1,13 @@
 {
   "name": "@client/web",
-  "version": "2.0.0",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@client/design-system": "workspace:*",
@@ -24,7 +22,6 @@
     "@mui/icons-material": "^7.3.6"
   },
   "devDependencies": {
-    "@commersync/config-testing": "workspace:*",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,5 +1,4 @@
-import type { Shadows } from "@mui/material/styles";
-
+import { Shadows } from "@mui/material/styles";
 import { shadowTokens } from "../tokens/shadows";
 
 export const shadows: Shadows = [

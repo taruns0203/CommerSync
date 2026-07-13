@@ -1,5 +1,4 @@
-import type { Request, Response } from "express";
-
+import { Request, Response } from "express";
 import { getAllAuth, getAuthId } from "../services/auth.service.js";
 
 export const getAuthController = async (req: Request, res: Response) => {

@@ -1,4 +1,4 @@
-import type { Components } from "@mui/material";
+import { Components } from "@mui/material";
 
 export const components: Components = {
   MuiCssBaseline: {

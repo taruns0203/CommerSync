@@ -1,20 +1,15 @@
 # CommerSync
 
-**CommerSync** is a production-grade, enterprise-scale ecommerce platform
-designed to serve millions of users with sub-200ms read latency and 99.95%
-availability.
+**CommerSync** is a production-grade, enterprise-scale ecommerce platform designed to serve millions of users with sub-200ms read latency and 99.95% availability.
 
-This repository is a monorepo managed with **pnpm workspaces** and
-**Turborepo**, containing both the frontend applications and backend
-microservices.
+This repository is a monorepo managed with **pnpm workspaces** and **Turborepo**, containing both the frontend applications and backend microservices.
 
 ## 🏗 Architecture & Tech Stack
 
 ### Architecture
 
 - **Monorepo**: pnpm workspaces + Turborepo
-- **Frontend**: Next.js 16 (App Router), React 19, Material-UI (MUI), Atomic
-  Design principles
+- **Frontend**: Next.js 16 (App Router), React 19, Material-UI (MUI), Atomic Design principles
 - **Backend**: Microservices architecture (Node.js/Express)
 - **Infrastructure**: Docker, AWS ECS Fargate, ECR, Application Load Balancer
 - **CI/CD**: GitHub Actions with OIDC AWS authentication
@@ -87,14 +82,11 @@ CommerSync/
 
 ## 📖 Documentation & Engineering Standards
 
-CommerSync is built on strict engineering excellence principles, mirroring
-FAANG-scale best practices. Please refer to the extensive documentation before
-contributing:
+CommerSync is built on strict engineering excellence principles, mirroring FAANG-scale best practices.
+Please refer to the extensive documentation before contributing:
 
 ### System Design
 
-- [Engineering Handbook Index](docs/engineering/engineering-index.md) - Reusable
-  playbook to recreate the exact monorepo foundation
 - [Backend Implementation Roadmap](docs/backend/MASTER_IMPLEMENTATION_ROADMAP.md)
 - [Frontend System Design](docs/frontend/PROJECT_ARCHITECTURE.md)
 - [CQRS Architecture](docs/backend/VOLUME_2_CHAPTER_1_CQRS.md)
