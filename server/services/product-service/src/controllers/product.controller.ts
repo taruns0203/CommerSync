@@ -1,5 +1,4 @@
-import type { Request, Response } from "express";
-
+import { Request, Response } from "express";
 import { getAllProducts, getProductById } from "../services/product.service.js";
 
 export const getProductsController = async (req: Request, res: Response) => {

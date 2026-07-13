@@ -1,12 +1,11 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { Typography, Box } from "@mui/material";
 
 export default function ThemeDebugPage() {
   const theme = useTheme();
 
-  // eslint-disable-next-line no-console
   console.log("Theme from design-system → web:", theme);
 
   return (

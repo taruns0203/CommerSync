@@ -1,18 +1,17 @@
-import type {
+import {
   PaletteOptions,
   SimplePaletteColorOptions,
 } from "@mui/material/styles";
-
 import {
-  ACCENT_PRIMARY,
-  ACCENT_SECONDARY,
-  ACCENT_TERTIARY,
   BG_MAIN,
   BG_SECONDARY,
   GLASS_MAIN,
-  TEXT_MUTED,
   TEXT_PRIMARY,
   TEXT_SECONDARY,
+  TEXT_MUTED,
+  ACCENT_PRIMARY,
+  ACCENT_SECONDARY,
+  ACCENT_TERTIARY,
 } from "../tokens/colors";
 
 declare module "@mui/material/styles" {

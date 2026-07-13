@@ -1,4 +1,4 @@
-import type { Product } from "@commersync/types/src/entities/Product.js";
+import { Product } from "@commersync/types/src/entities/Product.js";
 
 export type { Product };
 
