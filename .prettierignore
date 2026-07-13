@@ -1,11 +1,38 @@
+# Package dependencies
 node_modules
+**/node_modules
+
+# Build artifacts
 dist
+**/dist
 build
+**/build
 .next
+**/ .next
 out
+**/out
+.turbo
+**/.turbo
+
+# Lock files
 pnpm-lock.yaml
 *.lock
-.DS_Store
-coverage
-.turbo
 
+# Logs
+*.log
+logs
+**/logs
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage
+**/coverage
+
+# Temp files
+.cache
+**/.cache
+tmp
+**/tmp
