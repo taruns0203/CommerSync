@@ -1,14 +1,17 @@
 {
-  "name": "CommerSync",
+  "name": "commersync",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "CommerSync enterprise ecommerce monorepo",
+  "engines": {
+    "node": ">=22.16.0 <23",
+    "pnpm": ">=10.0.0"
+  },
   "devDependencies": {
-    "@types/react": "18.2.48",
-    "@types/react-dom": "18.2.18",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
     "@typescript-eslint/parser": "^8.48.0",
     "eslint": "^9.0.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.3.0",
@@ -23,7 +26,20 @@
     "test": "turbo run test",
     "clean": "turbo run clean",
     "prepare": "husky",
-    "postinstall": "husky"
+    "postinstall": "husky",
+    "typecheck": "turbo run typecheck"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "19.2.0",
+      "react-dom": "19.2.0",
+      "@types/react": "^19",
+      "@types/react-dom": "^19",
+      "@mui/material": "^7.3.6",
+      "@mui/icons-material": "^7.3.6",
+      "@emotion/react": "^11.14.0",
+      "@emotion/styled": "^11.14.1"
+    }
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -34,12 +50,14 @@
       "prettier --write"
     ]
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.23.0",
-  "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1"
-  }
+  "keywords": [
+    "ecommerce",
+    "nextjs",
+    "monorepo",
+    "turborepo"
+  ],
+  "author": "Tarun Sharma",
+  "license": "MIT",
+  "private": true,
+  "packageManager": "pnpm@10.23.0"
 }

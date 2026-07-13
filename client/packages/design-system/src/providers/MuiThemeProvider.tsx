@@ -1,10 +1,12 @@
 "use client";
 
 import { PropsWithChildren } from "react";
-import { ThemeProvider, CssBaseline } from "@mui/material";
+
+import { CssBaseline, ThemeProvider } from "@mui/material";
+
 import { theme } from "../theme";
 
-export function MuiThemeProvider(props: PropsWithChildren): JSX.Element {
+export function MuiThemeProvider(props: PropsWithChildren) {
   const { children } = props;
 
   return (

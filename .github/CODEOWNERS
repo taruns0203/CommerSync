@@ -1,0 +1,130 @@
+# =============================================================================
+# CommerSync — CODEOWNERS
+# =============================================================================
+# CURRENT STATE: Solo developer (@taruns0203) — every path routes to one owner.
+#
+# WHY THE SECTIONED STRUCTURE STILL EXISTS:
+# Even as a solo dev, this file is written the way it would look once the repo
+# has real teams. When CommerSync grows past one contributor, you swap
+# @taruns0203 for the relevant team handle on each line — the sections,
+# ordering, and rule precedence don't change. This avoids a rewrite later.
+#
+# GitHub evaluates rules TOP TO BOTTOM. For any given file, the LAST matching
+# pattern wins (not the most specific — the last one written). Keep new rules
+# BELOW any broader rule they need to override.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 0. GLOBAL DEFAULT OWNER
+# -----------------------------------------------------------------------------
+* @taruns0203
+
+# -----------------------------------------------------------------------------
+# 1. REPOSITORY ROOT — config, tooling, monorepo files
+# -----------------------------------------------------------------------------
+/*.json                    @taruns0203
+/*.yaml                    @taruns0203
+/*.yml                     @taruns0203
+/turbo.json                @taruns0203
+/package.json              @taruns0203
+/pnpm-workspace.yaml       @taruns0203
+/tsconfig*.json            @taruns0203
+/.eslintrc*                @taruns0203
+/.prettierrc*              @taruns0203
+/README.md                 @taruns0203
+/LICENSE                   @taruns0203
+
+# -----------------------------------------------------------------------------
+# 2. BACKEND — /server/
+# -----------------------------------------------------------------------------
+/server/                   @taruns0203
+
+# Per-service lines kept for future team hand-off — today all @taruns0203.
+/server/auth/              @taruns0203
+/server/users/             @taruns0203
+/server/products/          @taruns0203
+/server/categories/        @taruns0203
+/server/inventory/         @taruns0203
+/server/cart/              @taruns0203
+/server/checkout/          @taruns0203
+/server/orders/            @taruns0203
+/server/payments/          @taruns0203
+/server/shipping/          @taruns0203
+/server/notifications/     @taruns0203
+/server/analytics/         @taruns0203
+/server/search/            @taruns0203
+/server/gateway/           @taruns0203
+/server/workers/           @taruns0203
+/server/events/            @taruns0203
+
+# -----------------------------------------------------------------------------
+# 3. FRONTEND — /client/
+# -----------------------------------------------------------------------------
+/client/                   @taruns0203
+
+/client/apps/               @taruns0203
+/client/design-system/      @taruns0203
+/client/shared-ui/          @taruns0203
+/client/hooks/              @taruns0203
+/client/utils/              @taruns0203
+/client/types/              @taruns0203
+/client/validators/         @taruns0203
+
+# -----------------------------------------------------------------------------
+# 4. SHARED PACKAGES — /packages/
+# -----------------------------------------------------------------------------
+/packages/                  @taruns0203
+
+/packages/auth-sdk/         @taruns0203
+/packages/ui-kit/           @taruns0203
+/packages/event-bus/        @taruns0203
+/packages/config/           @taruns0203
+/packages/logger/           @taruns0203
+/packages/types/            @taruns0203
+
+# -----------------------------------------------------------------------------
+# 5. INFRASTRUCTURE
+# -----------------------------------------------------------------------------
+/docker/                    @taruns0203
+/infrastructure/             @taruns0203
+/terraform/                  @taruns0203
+/awsData/                    @taruns0203
+
+# -----------------------------------------------------------------------------
+# 6. GITHUB / CI-CD
+# -----------------------------------------------------------------------------
+/.github/                             @taruns0203
+/.github/workflows/                   @taruns0203
+/.github/ISSUE_TEMPLATE/              @taruns0203
+/.github/PULL_REQUEST_TEMPLATE.md     @taruns0203
+/.github/CODEOWNERS                   @taruns0203
+
+# -----------------------------------------------------------------------------
+# 7. DOCUMENTATION — /docs/
+# -----------------------------------------------------------------------------
+/docs/                       @taruns0203
+
+/docs/architecture/          @taruns0203
+/docs/handbooks/             @taruns0203
+/docs/api/                   @taruns0203
+/docs/contributing/          @taruns0203
+
+# -----------------------------------------------------------------------------
+# 8. SCRIPTS — /scripts/
+# -----------------------------------------------------------------------------
+/scripts/                    @taruns0203
+
+/scripts/build/              @taruns0203
+/scripts/tooling/            @taruns0203
+/scripts/migrations/         @taruns0203
+
+# =============================================================================
+# MIGRATION PATH — when you add a second contributor or a team
+# =============================================================================
+# Don't restructure. Just re-point individual lines:
+#     /server/payments/  @taruns0203        →   /server/payments/  @security-team
+#     /client/            @taruns0203        →   /client/            @frontend-team
+# Global default (`*`) should be the LAST thing you repoint, once every
+# section below it has an explicit real owner — otherwise unmatched files
+# fall back to a single person even after you've onboarded a team.
+# =============================================================================

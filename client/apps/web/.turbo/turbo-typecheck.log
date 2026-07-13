@@ -1,0 +1,6 @@
+
+
+> @client/web@0.1.0 typecheck /Users/Projects/CommerSync/client/apps/web
+> tsc --noEmit
+
+[41m[30m ELIFECYCLE [39m[49m [31mCommand failed.[39m

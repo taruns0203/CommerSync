@@ -1,6 +1,2 @@
-export type Product = {
-  id: string;
-  title: string;
-  price: number;
-  slug: string;
-};
+export * from "./Product";
+export * from "./User";

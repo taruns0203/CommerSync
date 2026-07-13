@@ -1,7 +1,8 @@
-import { TypographyOptions } from "@mui/material/styles/createTypography";
+import { TypographyVariantsOptions } from "@mui/material/styles";
+
 import { fontFamilies } from "../tokens/typography";
 
-export const typography: TypographyOptions = {
+export const typography: TypographyVariantsOptions = {
   fontFamily: fontFamilies.body,
 
   h1: {

@@ -1,5 +1,8 @@
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import importPlugin from "eslint-plugin-import";
+
 
 export default [
   {
@@ -40,10 +43,40 @@ export default [
     },
     plugins: {
       "@typescript-eslint": tseslint,
+      import: importPlugin,
+      "simple-import-sort": simpleImportSort,
     },
     rules: {
       "@typescript-eslint/no-unused-vars": "warn",
       "no-console": "off",
+      "simple-import-sort/imports": [
+        "error",
+        {
+          groups: [
+            // React & Next
+            ["^react$", "^next"],
+
+            // External packages
+            ["^@?\\w"],
+
+            // Monorepo packages
+            ["^@client", "^@server"],
+
+            // Internal aliases
+            ["^@/"],
+
+            // Relative imports
+            ["^\\."],
+
+            // Styles
+            ["\\.css$"]
+          ]
+        }
+      ],
+      "simple-import-sort/exports": "error",
+      "import/first": "error",
+      "import/newline-after-import": "error",
+      "import/no-duplicates": "error",
     },
   },
 ];
