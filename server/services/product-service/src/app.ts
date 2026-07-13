@@ -1,7 +1,8 @@
-import express from "express";
 import cors from "cors";
-import productRoutes from "./routes/product.routes.js";
+import express from "express";
+
 import { errorHandler } from "./middlewares/errorHandler.js";
+import productRoutes from "./routes/product.routes.js";
 import { log } from "./utils/logger.js";
 
 const app = express();
@@ -18,7 +19,7 @@ app.get("/", (_, res) => res.send("Product Service Running"));
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "healthy",
-    service: "auth-service",
+    service: "product-service",
     timestamp: new Date().toISOString(),
   });
 });

@@ -1,0 +1,5 @@
+
+
+> @server/auth-service@ typecheck /Users/Projects/CommerSync/server/services/auth-service
+> tsc --noEmit
+

@@ -1,0 +1,6 @@
+
+
+> @client/web@0.1.0 lint /Users/Projects/CommerSync/client/apps/web
+> eslint
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`

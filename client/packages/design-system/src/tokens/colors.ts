@@ -1,5 +1,5 @@
 export const BG_MAIN = "#FDFDFD";
-export const BG_SECONDARY = "#F2F2F2;";
+export const BG_SECONDARY = "#F2F2F2";
 export const GLASS_MAIN = "rgba(255, 255, 255, 0.65)";
 export const TEXT_PRIMARY = "#111111";
 export const TEXT_SECONDARY = "rgba(0, 0, 0, 0.65)";

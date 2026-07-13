@@ -1,0 +1,6 @@
+
+
+> @client/design-system@0.0.0 typecheck /Users/Projects/CommerSync/client/packages/design-system
+> tsc --noEmit
+
+[41m[30m ELIFECYCLE [39m[49m [31mCommand failed.[39m

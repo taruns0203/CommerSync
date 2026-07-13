@@ -6,18 +6,20 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@client/design-system": "workspace:*",
-    "@client/types": "workspace:*",
+    "@commersync/types": "workspace:*",
     "@client/ui": "workspace:*",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.3.6",
     "next": "16.0.5",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-dom": "19.2.0",
+    "@mui/icons-material": "^7.3.6"
   },
   "devDependencies": {
     "@types/node": "^20",

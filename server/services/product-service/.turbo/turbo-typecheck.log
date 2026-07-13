@@ -1,0 +1,19 @@
+
+
+> @server/product-service@ typecheck /Users/Projects/CommerSync/server/services/product-service
+> tsc --noEmit
+
+[96msrc/services/product.service.ts[0m:[93m1[0m:[93m20[0m - [91merror[0m[90m TS2724: [0m'"../models/product.model.js"' has no exported member named 'Product'. Did you mean 'products'?
+
+[7m1[0m import { products, Product } from "../models/product.model.js";
+[7m [0m [91m                   ~~~~~~~[0m
+
+  [96msrc/models/product.model.ts[0m:[93m4[0m:[93m14[0m
+    [7m4[0m export const products: Product[] = [
+    [7m [0m [96m             ~~~~~~~~[0m
+    'products' is declared here.
+
+
+Found 1 error in src/services/product.service.ts[90m:1[0m
+
+[41m[30m ELIFECYCLE [39m[49m [31mCommand failed with exit code 2.[39m
