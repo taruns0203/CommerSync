@@ -10,6 +10,13 @@ on:
       - main
       - dev
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   validate:
     name: Code Validation
@@ -45,13 +52,27 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Check Formatting & Linting
-        run: pnpm lint
+        run: |
+          pnpm format:check
+          pnpm lint
 
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Test
-        run: pnpm test
+      - name: Run Tests with Coverage
+        run: pnpm test:coverage
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
 
       - name: Build
-        run: pnpm build
+        run: turbo run build --affected
+
+
+## Missing 4 - Remote caching of turbo.json
+## Missing 5 — Parallel Jobs
+## Missing 9 — Fail Fast Ordering
+## Missing 10 — Required Status Checks
